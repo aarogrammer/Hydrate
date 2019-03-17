@@ -90,13 +90,11 @@ class Hydrate {
     
     private counter() {
         this.count++;
-        // let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
         if (this.count <=1) {
             return `$(heart) You should have consumed ${this.count} glass of water`;
         } 
         if(this.count >= this.userInput / 2) {
-            // return `Depending on your weight and height, check with a medical professional if you can consume more water. You should never over hydrate.`;
-            return `$(check) You should have consumed ${this.userInput / 2} cups of water this session of ${this.userInput} hours work. Congratulations!`;
+            return `$(check) You should have consumed ${this.userInput / 2} cups of water this session of ${this.userInput} hours work. Good work!`;
         }
         return `$(heart) You should have consumed ${this.count} glasses of water`;
     }
@@ -104,11 +102,9 @@ class Hydrate {
     private goalCheck() {
         if (this.count >= this.userInput / 2) {
             this.goalMet = true;
-            return `You should have consumed ${this.userInput / 2} cups of water this session of ${this.userInput} hours work. Congratulations!`;
+            return `You should have consumed ${this.userInput / 2} cups of water this session of ${this.userInput} hours work. Good work!`;
         }
-        if (this.count < 6) {
-            return 'Make sure to grab a glass of water!';
-        }
+        return 'Make sure to grab a glass of water!';
     }
 
 }

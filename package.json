@@ -4,6 +4,7 @@
 	"description": "A simple VS Code extension to remind you to stay hydrated.",
 	"icon": "icons/bottle.png",
 	"version": "0.0.1",
+	"publisher": "Aaron-Welsh",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aarogrammer/Hydrate.git"
