@@ -1,69 +1,47 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-let count = 0;
-const counter = () => {
-	count++;
-	// let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-	if (count <=1) {
-		return `$(heart) You should have consumed ${count} glass of water`;
-	} 
-	if(count >= 8) {
-		// return `Depending on your weight and height, check with a medical professional if you can consume more water. You should never over hydrate.`;
-		return `$(check) You should have consumed the recommended amount of water for today. Congratulations!`;
-	}
-	return `$(heart) You should have consumed ${count} glasses of water`;
-};
+import { Hydrate } from './Hydrate';
 
-const goalCheck = () => {
-
-	if (count > 6 && count <= 8) {
-		return `You should have consumed the recommended amount of water for today. Congratulations!`;
-	}
-	if (count < 6) {
-		return 'Make sure to grab a glass of water!';
-	}	
-
-};
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+/**
+ * @description Called when extension is activated
+ * @param context 
+ */
 export function activate(context: vscode.ExtensionContext) {
-
 	console.log('Hydrate is now activated.');
 
-	let disposable = vscode.commands.registerCommand('extension.hydrate', () => {
-		// The code you place here will be executed every time your command is executed
-		let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-		vscode.window.showInformationMessage(`We will keep track of how much water you should have consumed in the bottom left status bar.`);
-		statusBarItem.show();
+	const disposable = vscode.commands.registerCommand('extension.hydrate', async () => {
+		try {
+			const userInput:any = await vscode.window.showInputBox({
+				placeHolder: 'Amount of hours you intend to work for.',
+				prompt: 'Enter amount of hours you intend to work for.',
+				value: '8',
+				ignoreFocusOut: true,
+			});
 
-		setInterval(() => {
-			const message = counter();
-			statusBarItem.text = message;
-			statusBarItem.color = "White";
-		}, 1000);
+			if (isNaN(parseInt(userInput))) {
+				throw Error('You must insert a number');
+			}
+
+			const hydrate = new Hydrate(vscode, userInput);
+
+			hydrate.init();
+		} catch (err) {
+			vscode.window.showErrorMessage(err.message);
+			console.error(err);
+		}
 	});
-	setInterval(() => {
-		const goal:any = goalCheck();
-		vscode.window.showInformationMessage(goal);
-	}, 1000);
 	context.subscriptions.push(disposable);
 }
 
-// this method is called when your extension is deactivated
+/**
+ * @description Called when extension is deactivated
+ * @param context 
+ */
 export function deactivate(context: vscode.ExtensionContext) {
-		// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('The extension "hydrate" is now uninstalled!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.hydrate', () => {
-		// The code you place here will be executed every time your command is executed
+	console.log('The extension Hydrate is now uninstalled!');
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Uninstalled');
+	const disposable = vscode.commands.registerCommand('extension.hydrate', () => {
+		vscode.window.showInformationMessage('Hydrate has been uninstalled');
 	});
 
 	context.subscriptions.push(disposable);
