@@ -6,7 +6,6 @@ import { Hydrate } from './Hydrate';
  * @param context 
  */
 export function activate(context: vscode.ExtensionContext) {
-
 	console.log('Hydrate is now activated.');
 
 	const disposable = vscode.commands.registerCommand('extension.hydrate', async () => {

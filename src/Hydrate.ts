@@ -1,22 +1,53 @@
 class Hydrate {
 
-    count: number;
-    vscode: any;
-    time: number;
-    userInput: number;
-    userTime: number;
-    workingTime: number;
+    private count: number;
+    private vscode: any;
+    private alertTime: number;
+    private userInput: number;
+    private userTime: number;
+    private workingTime: number;
+    private timeRemaining: number;
+    private timeLeftStatusBar: any;
 
-    constructor(vscode: typeof import("vscode"), userInput: number) {
+    constructor(vscode: typeof import('vscode'), userInput: number) {
         this.count = 0;
         this.vscode = vscode;
         this.userInput = userInput;
         this.userTime = this.userInput * 1000;
-        this.workingTime = 60 * 60 * this.userTime;
-        this.time = 1000;
+        this.workingTime = 60 * 60 * this.userTime; // Not sure if I'll use this yet
+        this.timeRemaining = this.userInput;
+        this.alertTime = 1000;
+        this.timeLeftStatusBar = false;
     }
 
-    init() {
+    private timeLeft() {
+        if (this.timeRemaining === 0) {
+            return false;
+        }
+        this.timeRemaining = this.timeRemaining - 1;
+        return this.timeRemaining;
+    }
+
+    private timeLeftMessage() {
+        this.timeLeft();
+        // let timeLeftToWork = this.userInput;
+        if (!this.timeLeftStatusBar) {
+            this.timeLeftStatusBar = this.vscode.window.createStatusBarItem(this.vscode.StatusBarAlignment.right);
+        }
+        // Wait 60 seconds after no remaining time and hide status bar.
+        if (this.timeRemaining <= 0) {
+            setInterval(() => {
+                this.timeLeftStatusBar.hide();
+            }, 60000);
+        }
+        this.timeLeftStatusBar.text = this.timeRemaining > 0
+            ? `${this.timeRemaining} hours time remaining.`
+            : `No time remaining.`;
+        this.timeLeftStatusBar.color = 'White';
+        this.timeLeftStatusBar.show();
+    }
+
+    public init() {
         let statusBarItem = this.vscode.window.createStatusBarItem(this.vscode.StatusBarAlignment.Left);
 		this.vscode.window.showInformationMessage(`We will keep track of how much water you should have consumed in the bottom left status bar.`);
 		statusBarItem.show();
@@ -24,16 +55,19 @@ class Hydrate {
 		setInterval(() => {
 			const message = this.counter();
 			statusBarItem.text = message;
-			statusBarItem.color = "White";
-        }, this.time);
+			statusBarItem.color = 'White';
+        }, this.alertTime);
         
         setInterval(() => {
             const goal:any = this.goalCheck();
             this.vscode.window.showInformationMessage(goal);
-        }, this.time);
+            if (this.timeRemaining > 0) {
+                this.timeLeftMessage();
+            }
+        }, this.alertTime);
     }
     
-    counter() {
+    private counter() {
         this.count++;
         // let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
         if (this.count <=1) {
@@ -46,7 +80,7 @@ class Hydrate {
         return `$(heart) You should have consumed ${this.count} glasses of water`;
     }
 
-    goalCheck() {
+    private goalCheck() {
         if (this.count > 6 && this.count <= 8) {
             return `You should have consumed the recommended amount of water for today. Congratulations!`;
         }
