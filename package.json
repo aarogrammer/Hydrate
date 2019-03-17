@@ -22,7 +22,7 @@
 		"commands": [
 			{
 				"command": "extension.hydrate",
-				"title": "Do I need water?"
+				"title": "Hydrate"
 			}
 		]
 	},
